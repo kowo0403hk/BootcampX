@@ -10,7 +10,7 @@ const config = {
 
 const pool = new Pool(config);
 
-const input = process.argv[2];
+const input = process.argv[2] || 5;
 
 pool.query(`
   SELECT DISTINCT t.name

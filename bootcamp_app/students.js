@@ -10,15 +10,19 @@ const config = {
 
 const pool = new Pool(config);
 
-const input = process.argv[2];
-const amount = Number(process.argv[3]);
+const cohortName = process.argv[2];
+const limit = process.argv[3] || 5;
 
-pool.query(`
-  SELECT s.id, s.name AS student_name, c.name AS cohort_name
-  FROM students s JOIN cohorts c ON s.cohort_id = c.id
-  WHERE c.name = $1
-  LIMIT $2;
-`, [input, amount])
+const values = [`%${cohortName}%`, limit];
+
+const queryString = `
+SELECT s.id, s.name AS student_name, c.name AS cohort_name
+FROM students s JOIN cohorts c ON s.cohort_id = c.id
+WHERE c.name LIKE $1
+LIMIT $2;
+`;
+
+pool.query(queryString, values)
   .then((res) => {
     res.rows.forEach((user) => {
       console.log(`${user.student_name} has an id of ${user.id} and was in the ${user.cohort_name} cohort.`);
